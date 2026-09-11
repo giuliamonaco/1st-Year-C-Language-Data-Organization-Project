@@ -1,0 +1,559 @@
+#include <stdio.h>
+#include <math.h>
+
+double
+avg1(double array_lake[],int num){
+	int i;
+	double sum=0;
+		for(i=0;i<num;i++){
+			sum+=array_lake[i];
+		}
+	return(sum);
+}
+
+double
+avg2(double array_lake[], int num, int x){
+	double sum=0;
+	int i;
+		for(i=x;i<num;i++){
+			sum+=array_lake[i];
+		}
+	return(sum);
+}
+
+void
+highest_lake(double array_lake[],int array_years[], int array_days[], int r){
+	int i=0;
+	double highest_p;
+	highest_p=array_lake[0];
+	
+	    for (i=1;i<r;i++) {
+        if (array_lake[i] > highest_p) {
+            highest_p=array_lake[i];
+        }
+    }
+		
+    printf("Highest Level: %.2lf%%\n", highest_p);
+    for (int i = 0; i < r; i++) {
+        if (array_lake[i] == highest_p) {
+            printf("Year: %d, Day: %d\n", array_years[i], array_days[i]);
+        }
+    }
+}
+
+void
+overall(double array_lakes[152][6], int array_years[], int array_days[], int rows, int columns) {
+	int i=0, j=0;
+	double highest_p;
+	highest_p=array_lakes[0][0];
+	
+	for(i=1;i<rows;i++) {
+		for(j=1;j<columns;j++) 
+			if (array_lakes[i][j] > highest_p) {
+            highest_p = array_lakes[i][j];
+          
+	}
+}
+
+ if(j==0) {
+		printf("Lake: Superior\n");
+	} else if (j==1) {
+		printf("Lake: Michigan\n");
+	} else if (j==2) {
+		printf("Lake: Huron\n");
+	} else if (j==3) {
+		printf("Lake: Erie\n");
+	} else if (j==4) {
+		printf("Lake: Ontario\n");
+	} else {
+		printf("Lake: St. Clair\n");
+	}
+    printf("Highest Level: %.2lf%%\n", highest_p);
+    for (int i=0;i<rows;i++) {
+		for(j=0;j<columns;j++) 
+        if (array_lakes[i][j] == highest_p) {
+            printf("Year: %d, Day: %d\n", array_years[i], array_days[i]);
+        }
+    }
+}
+
+
+void monthly_avg(const char *input_file, const char *output_file, int r) {
+    FILE *input;
+    FILE *output;
+	int n;
+	n=ceil(r/30);
+    int day, count[n];
+    double sup_daily_avg, mich_daily_avg, huron_daily_avg, erie_daily_avg, ont_daily_avg, st_daily_avg;
+	double sum_sup[n],sum_mich[n],sum_huron[n],sum_erie[n],sum_ont[n],sum_st[n];
+	
+	input=fopen(input_file, "r");
+	output=fopen(output_file, "w");
+	
+    
+    for (int i = 0; i < n; i++) {
+		sum_sup[i]=0.0;
+		sum_mich[i]=0.0;
+		sum_huron[i]=0.0;
+		sum_erie[i]=0.0;
+		sum_ont[i]=0.0;
+		sum_st[i]=0.0;
+        count[i] = 0;
+    }
+    
+    while (fscanf(input, "%d %lf %lf %lf %lf %lf %lf", &day, &sup_daily_avg, &mich_daily_avg,&huron_daily_avg,&erie_daily_avg,&ont_daily_avg,&st_daily_avg) == 7) {
+        int index = (day - 1) / 30;
+        sum_sup[index] += sup_daily_avg;
+        sum_mich[index] += mich_daily_avg;
+        sum_huron[index] += huron_daily_avg;
+        sum_erie[index] += erie_daily_avg;
+        sum_ont[index] += ont_daily_avg;
+        sum_st[index] += st_daily_avg;
+        count[index]++;
+    }
+
+    fclose(input);
+
+
+    for (int i = 0; i <n; i++) {
+        if (count[i] > 0) fprintf(output, "%d %5.2lf %5.2lf %5.2lf %5.2lf %5.2lf %5.2lf\n", i + 1,sum_sup[i] / count[i], sum_mich[i] / count[i], sum_huron[i] / count[i], sum_erie[i] / count[i],sum_ont[i] / count[i],sum_st[i] / count[i]);
+    }
+
+    fclose(output);
+}
+
+
+            
+int
+main(void){
+	
+//2023-2024 GREAT LAKES DATA
+
+	FILE*input;
+	FILE*out2024;
+	FILE*out2022;
+	FILE*out2021;
+	int year, day, r=0, i=0, x=0, y=0;
+	int array_days[1000], array_years[1000];
+	double sup, mich, huron, erie, ont, stclr, gl_t, avg_s2023, avg_h2023, avg_m2023, avg_e2023, avg_o2023, avg_st2023, avg_total2023;
+	double avg_s2024, avg_h2024, avg_m2024, avg_o2024, avg_st2024, avg_total2024, avg_e2024;
+	double high_avg, low_avg;
+	int highest_i, lowest_i;
+	double array_sup[1000], array_mich[1000], array_huron[1000], array_erie[1000], array_ont[1000], array_st[1000], array_total[1000];
+	char *lakes[14]={"Superior","Michigan","Huron","Erie", "Ontario", "St.Clair","Superior", "Michigan","Huron","Erie","Ontario", "St.Clair"};
+	
+printf("****2023-2024 GREAT LAKES ICE CONCENTRATION DATA****\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+printf("\n\n\n");
+
+	input=fopen("2023_2024_Great_Lakes_Data.txt","r");
+	
+	while (r<1000 && fscanf(input,"%d %d %lf %lf %lf %lf %lf %lf %lf", &year,&day, &sup, &mich, &huron, &erie, &ont, &stclr, &gl_t)==9){
+			array_years[r]=year;
+			array_days[r]=day;
+			array_sup[r]=sup;
+			array_mich[r]=mich;
+			array_huron[r]=huron;
+			array_erie[r]=erie;
+			array_ont[r]=ont;
+			array_st[r]=stclr;
+			array_total[r]=gl_t;
+			r++;
+}
+fclose(input);
+
+for (i=0;i<r;i++){
+		if (array_years[i]==2023){
+			x++;
+		}
+		else{
+			y++;
+		}
+}
+
+//Q1: Average 2023
+avg_s2023=avg1(array_sup,x)/x;
+avg_m2023=avg1(array_mich,x)/x;
+avg_h2023=avg1(array_huron,x)/x;
+avg_e2023=avg1(array_erie,x)/x;
+avg_o2023=avg1(array_ont,x)/x;
+avg_st2023=avg1(array_st,x)/x;
+avg_total2023=avg1(array_total,x)/x;
+
+printf("2023 Great Lakes Ice Concentration Averages\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+printf("Superior: %lf%%\nMichigan: %lf%%\nHuron: %lf%%\nErie: %lf%%\nOntario: %lf%%\nSt.Clair: %lf%%\nTotal: %lf%%\n", avg_s2023, avg_m2023, avg_h2023, avg_e2023, avg_o2023, avg_st2023, avg_total2023);
+printf("\n\n");
+
+//Q1: Average 2024
+avg_s2024=avg2(array_sup,r,x)/y;
+avg_m2024=avg2(array_mich,r,x)/y;
+avg_h2024=avg2(array_huron,r,x)/y;
+avg_e2024=avg2(array_erie,r,x)/y;
+avg_o2024=avg2(array_ont,r,x)/y;
+avg_st2024=avg2(array_st,r,x)/y;
+avg_total2024=avg2(array_total,r,x)/y;
+
+printf("2024 Great Lakes Ice Concentration Averages\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+printf("Superior: %lf%%\nMichigan: %lf%%\nHuron: %lf%%\nErie: %lf%%\nOntario: %lf%%\nSt.Clair: %lf%%\nTotal: %lf%%\n", avg_s2024, avg_m2024, avg_h2024, avg_e2024, avg_o2024, avg_st2024, avg_total2024);
+printf("\n\n");
+
+//Q2: Highest and Lowest Average & Which Lake
+double array_avg[]={avg_s2023, avg_m2023, avg_h2023, avg_e2023, avg_o2023, avg_st2023, avg_s2024, avg_m2024, avg_h2024, avg_e2024, avg_o2024, avg_st2024};
+
+highest_i=lowest_i=0;
+high_avg=low_avg=array_avg[0];
+for (i=1;i<12;i++){
+	if (array_avg[i]<low_avg){
+		 low_avg=array_avg[i];
+		 lowest_i=i;
+	 }
+	else if (array_avg[i]>high_avg){
+		high_avg=array_avg[i];
+		highest_i=i;
+	}
+}
+
+printf("Lake with the highest average concentration (2023-2024):\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+printf("Highest is %s at %.6lf%%.\n", lakes[highest_i], array_avg[highest_i]);
+printf("\n");
+printf("Lake with the lowest average concentration (2023-2024):\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+printf("Lowest is %s at %.6lf%%.\n", lakes[lowest_i], array_avg[lowest_i]);
+printf("\n\n");
+
+//Q3: Day and year and highest ice concentration percentage for each lake
+printf("Highest Ice Concentration Percentage for Each Lake & When (2023-2024)\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+
+printf("Lake Superior: ");
+printf("\n--------------\n");
+highest_lake(array_sup, array_years, array_days, r);
+printf("\nLake Michigan: ");
+printf("\n--------------\n");
+highest_lake(array_mich, array_years, array_days, r);
+printf("\nLake Huron: ");
+printf("\n--------------\n");
+highest_lake(array_huron, array_years, array_days, r);
+printf("\nLake Erie: ");
+printf("\n--------------\n");
+highest_lake(array_erie, array_years, array_days, r);
+printf("\nLake Ontario: ");
+printf("\n--------------\n");
+highest_lake(array_ont, array_years, array_days, r);
+printf("\nLake St. Clair: ");
+printf("\n--------------\n");
+highest_lake(array_st, array_years, array_days, r);
+
+printf("\n\n");
+
+//Q4: Day, year and lake with the highest ice concentration percentage in the data file.
+double array_lakes[r][6];
+for (int i=0;i<r;i++) {
+    array_lakes[i][0]=array_sup[i];
+    array_lakes[i][1]=array_mich[i];
+    array_lakes[i][2]=array_huron[i];
+    array_lakes[i][3]=array_erie[i];
+    array_lakes[i][4]=array_ont[i];
+    array_lakes[i][5]=array_st[i];
+}
+
+printf("Day, Year and Lake with the Highest Ice Concentration\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+
+overall(array_lakes, array_years, array_days, r, 6);
+
+printf("\n\n\n");
+
+out2024=fopen("lake.txt", "w");
+for (i=0;i<=r;i++){
+	fprintf(out2024,"%d   %5.2lf %5.2lf %5.2lf %5.2lf %5.2lf %5.2lf \n",i+1,array_sup[i], array_mich[i], array_huron[i], array_erie[i], array_ont[i],array_st[i]);
+}
+
+fclose(out2024);
+monthly_avg("lake.txt","month_avg_2024.txt",r);
+
+//2022-2023 GREAT LAKES DATA
+
+double avg_s2022, avg_h2022, avg_m2022, avg_o2022, avg_st2022, avg_total2022, avg_e2022;
+int array_days2[1000], array_years2[1000];
+double array_sup2[1000], array_mich2[1000], array_huron2[1000], array_erie2[1000], array_ont2[1000], array_st2[1000], array_total2[1000];
+
+printf("****2022-2023 GREAT LAKES ICE CONCENTRATION DATA****\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+printf("\n\n\n");
+	
+	input=fopen("2022_2023_Great_Lakes_Data.txt","r");
+	r=0, i=0, x=0, y=0;
+	
+	while (r<1000 && fscanf(input,"%d %d %lf %lf %lf %lf %lf %lf %lf", &year,&day, &sup, &mich, &huron, &erie, &ont, &stclr, &gl_t)==9){
+			array_years2[r]=year;
+			array_days2[r]=day;
+			array_sup2[r]=sup;
+			array_mich2[r]=mich;
+			array_huron2[r]=huron;
+			array_erie2[r]=erie;
+			array_ont2[r]=ont;
+			array_st2[r]=stclr;
+			array_total2[r]=gl_t;
+			r++;
+}
+fclose(input);
+
+for (i=0;i<r;i++){
+		if (array_years2[i]==2022){
+			x++;
+		}
+		else{
+			y++;
+		}
+}
+
+//Q1: Average 2022
+avg_s2022=avg1(array_sup2,x)/x;
+avg_m2022=avg1(array_mich2,x)/x;
+avg_h2022=avg1(array_huron2,x)/x;
+avg_e2022=avg1(array_erie2,x)/x;
+avg_o2022=avg1(array_ont2,x)/x;
+avg_st2022=avg1(array_st2,x)/x;
+avg_total2022=avg1(array_total2,x)/x;
+
+printf("2022 Great Lakes Ice Concentration Averages\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+printf("Superior: %lf%%\nMichigan: %lf%%\nHuron: %lf%%\nErie: %lf%%\nOntario: %lf%%\nSt.Clair: %lf%%\nTotal: %lf%%\n", avg_s2022, avg_m2022, avg_h2022, avg_e2022, avg_o2022, avg_st2022, avg_total2022);
+printf("\n\n");
+
+//Q1: Average 2023
+avg_s2023=avg2(array_sup2,r,x)/y;
+avg_m2023=avg2(array_mich2,r,x)/y;
+avg_h2023=avg2(array_huron2,r,x)/y;
+avg_e2023=avg2(array_erie2,r,x)/y;
+avg_o2023=avg2(array_ont2,r,x)/y;
+avg_st2023=avg2(array_st2,r,x)/y;
+avg_total2023=avg2(array_total2,r,x)/y;
+
+printf("2023 Great Lakes Ice Concentration Averages\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+printf("Superior: %lf%%\nMichigan: %lf%%\nHuron: %lf%%\nErie: %lf%%\nOntario: %lf%%\nSt.Clair: %lf%%\nTotal: %lf%%\n", avg_s2023, avg_m2023, avg_h2023, avg_e2023, avg_o2023, avg_st2023, avg_total2023);
+printf("\n\n");
+
+//Q2: Highest and Lowest Average & Which Lake
+double array_avg2[]={avg_s2022, avg_m2022, avg_h2022, avg_e2022, avg_o2022, avg_st2022, avg_s2023, avg_m2023, avg_h2023, avg_e2023, avg_o2023, avg_st2023};
+
+highest_i=lowest_i=0;
+high_avg=low_avg=array_avg2[0];
+for (i=1;i<12;i++){
+	if (array_avg2[i]<low_avg){
+		 low_avg=array_avg2[i];
+		 lowest_i=i;
+	 }
+	else if (array_avg2[i]>high_avg){
+		high_avg=array_avg2[i];
+		highest_i=i;
+	}
+}
+
+printf("Lake with the highest average concentration (2022-2023):\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+printf("Highest is %s at %.6lf%%.\n", lakes[highest_i], array_avg2[highest_i]);
+printf("\n");
+printf("Lake with the lowest average concentration (2022-2023):\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+printf("Lowest is %s at %.6lf%%.\n", lakes[lowest_i], array_avg2[lowest_i]);
+printf("\n\n");
+
+//Q3: Day and year and highest ice concentration percentage for each lake
+printf("Highest Ice Concentration Percentage for Each Lake & When (2022-2023)\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+
+printf("Lake Superior: ");
+printf("\n--------------\n");
+highest_lake(array_sup2, array_years2, array_days2, r);
+printf("\nLake Michigan: ");
+printf("\n--------------\n");
+highest_lake(array_mich2, array_years2, array_days2, r);
+printf("\nLake Huron: ");
+printf("\n--------------\n");
+highest_lake(array_huron2, array_years2, array_days2, r);
+printf("\nLake Erie: ");
+printf("\n--------------\n");
+highest_lake(array_erie2, array_years2, array_days2, r);
+printf("\nLake Ontario: ");
+printf("\n--------------\n");
+highest_lake(array_ont2, array_years2, array_days2, r);
+printf("\nLake St. Clair: ");
+printf("\n--------------\n");
+highest_lake(array_st2, array_years2, array_days2, r);
+
+printf("\n\n");
+
+//Q4: Day, year and lake with the highest ice concentration percentage in the data file.
+double array_lakes2[r][6];
+for (int i=0;i<r;i++) {
+    array_lakes2[i][0]=array_sup2[i];
+    array_lakes2[i][1]=array_mich2[i];
+    array_lakes2[i][2]=array_huron2[i];
+    array_lakes2[i][3]=array_erie2[i];
+    array_lakes2[i][4]=array_ont2[i];
+    array_lakes2[i][5]=array_st2[i];
+}
+
+printf("Day, Year and Lake with the Highest Ice Concentration\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+
+overall(array_lakes2, array_years2, array_days2, r, 6);
+
+printf("\n\n\n");
+
+//For plot
+out2022=fopen("lake2022.txt","w");
+for (i=0;i<=r;i++){
+	fprintf(out2022,"%d   %5.2lf %5.2lf %5.2lf %5.2lf %5.2lf %5.2lf \n",i+1,array_sup2[i], array_mich2[i], array_huron2[i], array_erie2[i], array_ont2[i],array_st2[i]);
+}
+
+fclose(out2022);
+monthly_avg("lake2022.txt","month_avg_2022.txt",r);
+
+//2021-2022 GREAT LAKES DATA
+
+double avg_s2021, avg_h2021, avg_m2021, avg_o2021, avg_st2021, avg_total2021, avg_e2021;
+int array_days3[1000], array_years3[1000];
+double array_sup3[1000], array_mich3[1000], array_huron3[1000], array_erie3[1000], array_ont3[1000], array_st3[1000], array_total3[1000];
+
+printf("****2021-2022 GREAT LAKES ICE CONCENTRATION DATA****\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+printf("\n\n\n");
+
+	input=fopen("2021_2022_Great_Lakes_Data.txt","r");
+	r=0, i=0, x=0, y=0;
+	
+	while (r<1000 && fscanf(input,"%d %d %lf %lf %lf %lf %lf %lf %lf", &year,&day, &sup, &mich, &huron, &erie, &ont, &stclr, &gl_t)==9){
+			array_years3[r]=year;
+			array_days3[r]=day;
+			array_sup3[r]=sup;
+			array_mich3[r]=mich;
+			array_huron3[r]=huron;
+			array_erie3[r]=erie;
+			array_ont3[r]=ont;
+			array_st3[r]=stclr;
+			array_total3[r]=gl_t;
+			r++;
+}
+fclose(input);
+
+for (i=0;i<r;i++){
+		if (array_years2[i]==2022){
+			x++;
+		}
+		else{
+			y++;
+		}
+}
+
+//Q1: Average 2021
+avg_s2021=avg1(array_sup3,x)/x;
+avg_m2021=avg1(array_mich3,x)/x;
+avg_h2021=avg1(array_huron3,x)/x;
+avg_e2021=avg1(array_erie3,x)/x;
+avg_o2021=avg1(array_ont3,x)/x;
+avg_st2021=avg1(array_st3,x)/x;
+avg_total2021=avg1(array_total3,x)/x;
+
+printf("2021 Great Lakes Ice Concentration Averages\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+printf("Superior: %lf%%\nMichigan: %lf%%\nHuron: %lf%%\nErie: %lf%%\nOntario: %lf%%\nSt.Clair: %lf%%\nTotal: %lf%%\n", avg_s2021, avg_m2021, avg_h2021, avg_e2021, avg_o2021, avg_st2021, avg_total2021);
+printf("\n\n");
+
+//Q1: Average 2022
+avg_s2022=avg2(array_sup3,r,x)/y;
+avg_m2022=avg2(array_mich3,r,x)/y;
+avg_h2022=avg2(array_huron3,r,x)/y;
+avg_e2022=avg2(array_erie3,r,x)/y;
+avg_o2022=avg2(array_ont3,r,x)/y;
+avg_st2022=avg2(array_st3,r,x)/y;
+avg_total2022=avg2(array_total3,r,x)/y;
+
+printf("2022 Great Lakes Ice Concentration Averages\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+printf("Superior: %lf%%\nMichigan: %lf%%\nHuron: %lf%%\nErie: %lf%%\nOntario: %lf%%\nSt.Clair: %lf%%\nTotal: %lf%%\n", avg_s2022, avg_m2022, avg_h2022, avg_e2022, avg_o2022, avg_st2022, avg_total2022);
+printf("\n\n");
+
+//Q2: Highest and Lowest Average & Which Lake
+double array_avg3[]={avg_s2021, avg_m2021, avg_h2021, avg_e2021, avg_o2021, avg_st2021, avg_s2022, avg_m2022, avg_h2022, avg_e2022, avg_o2022, avg_st2022};
+
+highest_i=lowest_i=0;
+high_avg=low_avg=array_avg3[0];
+for (i=1;i<12;i++){
+	if (array_avg3[i]<low_avg){
+		 low_avg=array_avg3[i];
+		 lowest_i=i;
+	 }
+	else if (array_avg3[i]>high_avg){
+		high_avg=array_avg3[i];
+		highest_i=i;
+	}
+}
+
+printf("Lake with the highest average concentration (2021-2022):\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+printf("Highest is %s at %.6lf%%.\n", lakes[highest_i], array_avg3[highest_i]);
+printf("\n");
+printf("Lake with the lowest average concentration (2021-2022):\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+printf("Lowest is %s at %.6lf%%.\n", lakes[lowest_i], array_avg3[lowest_i]);
+printf("\n\n");
+
+
+//Q3: Day and year and highest ice concentration percentage for each lake
+printf("Highest Ice Concentration Percentage for Each Lake & When (2021-2022)\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+
+printf("Lake Superior: ");
+printf("\n--------------\n");
+highest_lake(array_sup3, array_years3, array_days3, r);
+printf("\nLake Michigan: ");
+printf("\n--------------\n");
+highest_lake(array_mich3, array_years3, array_days3, r);
+printf("\nLake Huron: ");
+printf("\n--------------\n");
+highest_lake(array_huron3, array_years3, array_days3, r);
+printf("\nLake Erie: ");
+printf("\n--------------\n");
+highest_lake(array_erie3, array_years3, array_days3, r);
+printf("\nLake Ontario: ");
+printf("\n--------------\n");
+highest_lake(array_ont3, array_years3, array_days3, r);
+printf("\nLake St. Clair: ");
+printf("\n--------------\n");
+highest_lake(array_st3, array_years3, array_days3, r);
+
+printf("\n\n");
+
+out2021=fopen("lake2021.txt","w");
+for (i=0;i<=r;i++){
+	fprintf(out2021,"%d   %5.2lf %5.2lf %5.2lf %5.2lf %5.2lf %5.2lf \n",i+1,array_sup3[i], array_mich3[i], array_huron3[i], array_erie3[i], array_ont3[i],array_st3[i]);
+}
+
+fclose(out2021);
+monthly_avg("lake2021.txt","month_avg_2021.txt",r);
+
+//Q4: Day, year and lake with the highest ice concentration percentage in the data file.
+double array_lakes3[r][6];
+for (int i=0;i<r;i++) {
+    array_lakes3[i][0]=array_sup3[i];
+    array_lakes3[i][1]=array_mich3[i];
+    array_lakes3[i][2]=array_huron3[i];
+    array_lakes3[i][3]=array_erie3[i];
+    array_lakes3[i][4]=array_ont3[i];
+    array_lakes3[i][5]=array_st3[i];
+}
+
+printf("Day, Year and Lake with the Highest Ice Concentration\n");
+printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+
+overall(array_lakes3, array_years3, array_days3, r, 6);
+
+return(0);
+}
