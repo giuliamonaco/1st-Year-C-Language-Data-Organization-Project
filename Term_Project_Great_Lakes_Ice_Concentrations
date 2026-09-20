@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
+//Purpose: Calculate the sum of all values in an array
 double
 avg1(double array_lake[],int num){
 	int i;
@@ -11,6 +12,7 @@ avg1(double array_lake[],int num){
 	return(sum);
 }
 
+//Purpose: Calculate the sum of values starting at a specific position in the array
 double
 avg2(double array_lake[], int num, int x){
 	double sum=0;
@@ -21,12 +23,15 @@ avg2(double array_lake[], int num, int x){
 	return(sum);
 }
 
+//Find the highest ice concentration for one lake and display the year and day it occured
 void
 highest_lake(double array_lake[],int array_years[], int array_days[], int r){
 	int i=0;
 	double highest_p;
+	//Assume the first lake has the highest ice concentration
 	highest_p=array_lake[0];
-	
+
+		//Check every value in the array for a larger concentration
 	    for (i=1;i<r;i++) {
         if (array_lake[i] > highest_p) {
             highest_p=array_lake[i];
@@ -34,6 +39,8 @@ highest_lake(double array_lake[],int array_years[], int array_days[], int r){
     }
 		
     printf("Highest Level: %.2lf%%\n", highest_p);
+
+	//search to find when the highest concentration occured
     for (int i = 0; i < r; i++) {
         if (array_lake[i] == highest_p) {
             printf("Year: %d, Day: %d\n", array_years[i], array_days[i]);
@@ -41,12 +48,16 @@ highest_lake(double array_lake[],int array_years[], int array_days[], int r){
     }
 }
 
+//Find the highest ice concentration across all six lakes
 void
 overall(double array_lakes[152][6], int array_years[], int array_days[], int rows, int columns) {
 	int i=0, j=0;
 	double highest_p;
+
+	//Assume the first value is the highest
 	highest_p=array_lakes[0][0];
-	
+
+	//Use a double array to search through every row and column
 	for(i=1;i<rows;i++) {
 		for(j=1;j<columns;j++) 
 			if (array_lakes[i][j] > highest_p) {
@@ -55,6 +66,7 @@ overall(double array_lakes[152][6], int array_years[], int array_days[], int row
 	}
 }
 
+//Determine which lake corresponds to the column containing the highest ice concentration
  if(j==0) {
 		printf("Lake: Superior\n");
 	} else if (j==1) {
@@ -68,7 +80,10 @@ overall(double array_lakes[152][6], int array_years[], int array_days[], int row
 	} else {
 		printf("Lake: St. Clair\n");
 	}
+
     printf("Highest Level: %.2lf%%\n", highest_p);
+
+	//Search through the array to find the day and year with the highest concentration
     for (int i=0;i<rows;i++) {
 		for(j=0;j<columns;j++) 
         if (array_lakes[i][j] == highest_p) {
@@ -77,20 +92,24 @@ overall(double array_lakes[152][6], int array_years[], int array_days[], int row
     }
 }
 
-
+//Calculate the average monthly ice concentration for each lake and save results to an output file
 void monthly_avg(const char *input_file, const char *output_file, int r) {
     FILE *input;
     FILE *output;
 	int n;
+	
+	//Determine the approximate number of months
 	n=ceil(r/30);
     int day, count[n];
+	
+	//Arrays used to store the total concentrations for each month
     double sup_daily_avg, mich_daily_avg, huron_daily_avg, erie_daily_avg, ont_daily_avg, st_daily_avg;
 	double sum_sup[n],sum_mich[n],sum_huron[n],sum_erie[n],sum_ont[n],sum_st[n];
 	
 	input=fopen(input_file, "r");
 	output=fopen(output_file, "w");
 	
-    
+    //Initialize monthly sums and counter to zero
     for (int i = 0; i < n; i++) {
 		sum_sup[i]=0.0;
 		sum_mich[i]=0.0;
@@ -100,22 +119,30 @@ void monthly_avg(const char *input_file, const char *output_file, int r) {
 		sum_st[i]=0.0;
         count[i] = 0;
     }
-    
+
+	//Read each row of data
     while (fscanf(input, "%d %lf %lf %lf %lf %lf %lf", &day, &sup_daily_avg, &mich_daily_avg,&huron_daily_avg,&erie_daily_avg,&ont_daily_avg,&st_daily_avg) == 7) {
+		//convert the day number into a monthly indez
+		//ie. Days 1-30 would correspond to index 0 meaning that is the first month
         int index = (day - 1) / 30;
+
+		//Add each lakes daily concentration to its monthly total
         sum_sup[index] += sup_daily_avg;
         sum_mich[index] += mich_daily_avg;
         sum_huron[index] += huron_daily_avg;
         sum_erie[index] += erie_daily_avg;
         sum_ont[index] += ont_daily_avg;
         sum_st[index] += st_daily_avg;
+
+		//keep track of how many values are in each month
         count[index]++;
     }
 
     fclose(input);
 
-
+	//Calculate and write the monthly averages to the output file
     for (int i = 0; i <n; i++) {
+		//Only calculate the average if the month contains data
         if (count[i] > 0) fprintf(output, "%d %5.2lf %5.2lf %5.2lf %5.2lf %5.2lf %5.2lf\n", i + 1,sum_sup[i] / count[i], sum_mich[i] / count[i], sum_huron[i] / count[i], sum_erie[i] / count[i],sum_ont[i] / count[i],sum_st[i] / count[i]);
     }
 
@@ -133,13 +160,17 @@ main(void){
 	FILE*out2024;
 	FILE*out2022;
 	FILE*out2021;
+
 	int year, day, r=0, i=0, x=0, y=0;
+	
+	//Arrays storing the year and day for each data point
 	int array_days[1000], array_years[1000];
 	double sup, mich, huron, erie, ont, stclr, gl_t, avg_s2023, avg_h2023, avg_m2023, avg_e2023, avg_o2023, avg_st2023, avg_total2023;
 	double avg_s2024, avg_h2024, avg_m2024, avg_o2024, avg_st2024, avg_total2024, avg_e2024;
 	double high_avg, low_avg;
 	int highest_i, lowest_i;
 	double array_sup[1000], array_mich[1000], array_huron[1000], array_erie[1000], array_ont[1000], array_st[1000], array_total[1000];
+	//stores the name of the lakes, first 6 correspond to 2023 and last 6 correspond to 2024
 	char *lakes[14]={"Superior","Michigan","Huron","Erie", "Ontario", "St.Clair","Superior", "Michigan","Huron","Erie","Ontario", "St.Clair"};
 	
 printf("****2023-2024 GREAT LAKES ICE CONCENTRATION DATA****\n");
@@ -162,6 +193,7 @@ printf("\n\n\n");
 }
 fclose(input);
 
+//count how many rows belong to 2023 and how many belong to 2024
 for (i=0;i<r;i++){
 		if (array_years[i]==2023){
 			x++;
